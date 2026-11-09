@@ -3,6 +3,20 @@
 Aplicativo desktop profissional para Windows, construído com PySide6 (Qt) e
 integrado ao Supabase (autenticação, banco de dados, realtime, storage).
 
+## Screenshots
+
+![Tela principal](screenshots/main.png)
+
+![Assistente IA](screenshots/assistente_ia.png)
+
+![Personalização](screenshots/personalização.png)
+
+![Temas](screenshots/temas.png)
+
+![Monitoramento do PC](screenshots/monitoramento_do_pc.png)
+
+![Minha conta](screenshots/minha_conta.png)
+
 ## Requisitos
 
 - Python 3.11+
