@@ -17,6 +17,28 @@ integrado ao Supabase (autenticação, banco de dados, realtime, storage).
 
 ![Minha conta](screenshots/minha_conta.png)
 
+## Instalação rápida (comandos)
+
+```powershell
+# 1. Clonar
+git clone https://github.com/gptecnologiasite-bot/gp-desktop-ultimate-ai.git
+cd gp-desktop-ultimate-ai
+
+# 2. Ambiente virtual
+python -m venv .venv
+.venv\Scripts\activate
+
+# 3. Dependências
+pip install -r requirements.txt
+
+# 4. Configurar Supabase
+copy .env.example .env
+# edite .env com SUPABASE_URL e SUPABASE_ANON_KEY
+
+# 5. Rodar
+python main.py
+```
+
 ## Requisitos
 
 - Python 3.11+
