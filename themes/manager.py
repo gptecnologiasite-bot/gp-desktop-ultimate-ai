@@ -114,13 +114,7 @@ class ThemeManager(QObject if _QT else object):  # type: ignore[misc]
                     target_app.setStyleSheet(qss)
             except Exception:
                 pass
-            try:
-                if _QT and QPalette is not None and hasattr(target_app, "setPalette"):
-                    pal = QPalette()
-                    # best-effort
-                    target_app.setPalette(pal)
-            except Exception:
-                pass
+            # (QPalette vazio removido - evita sobrescrever estilos)
         try:
             self.theme_changed.emit(resolved)
         except Exception:

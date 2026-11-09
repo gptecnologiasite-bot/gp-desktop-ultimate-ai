@@ -27,18 +27,27 @@ def open_program(
 ) -> bool:
     """Abre um programa/caminho. Retorna True em sucesso."""
     try:
+        # valida extensao permitida
+        allowed_exts = {".exe", ".bat", ".cmd", ".com", ".msi", ".py", ".js"}
+        ext = os.path.splitext(path)[1].lower()
+        if ext and ext not in allowed_exts:
+            return False
         if os.name == "nt":
             if path.lower().endswith((".bat", ".cmd")):
-                subprocess.Popen([path] + (args or []), shell=True)
+                # shell=False com cmd.exe /c, quoting seguro via lista
+                subprocess.Popen(["cmd.exe", "/c", path] + (args or []), shell=False)
             else:
-                os.startfile(path)  # type: ignore[attr-defined]
+                try:
+                    os.startfile(path)  # type: ignore[attr-defined]
+                except Exception:
+                    subprocess.Popen([path] + (args or []), shell=False)
             return True
         else:
-            subprocess.Popen([path] + (args or []))
+            subprocess.Popen([path] + (args or []), shell=False)
             return True
     except Exception:
         try:
-            subprocess.Popen([path] + (args or []))
+            subprocess.Popen([path] + (args or []), shell=False)
             return True
         except Exception:
             return False

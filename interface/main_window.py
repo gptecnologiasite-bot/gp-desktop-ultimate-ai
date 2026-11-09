@@ -49,9 +49,11 @@ class MainWindow(QMainWindow):
         self.theme_manager = theme_manager or ThemeManager()
 
         self.setWindowTitle("GP Desktop Ultimate AI")
-        self.resize(1280, 800)
+        self.resize(1320, 840)
+        self.setMinimumSize(960, 640)
 
         central = QWidget()
+        central.setObjectName("central")
         self.setCentralWidget(central)
         layout = QHBoxLayout(central)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -62,26 +64,54 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.sidebar)
 
         self.stack = QStackedWidget()
+        self.stack.setObjectName("contentStack")
         self.pages = {}
         for name in MENU_ITEMS:
             if name == "Personalização":
-                page = PersonalizationCenter()
+                page = PersonalizationCenter(
+                    settings=self.settings,
+                    personalization=self.personalization,
+                    theme_manager=self.theme_manager,
+                )
             else:
-                page = create_page(name)
+                page = create_page(
+                    name,
+                    settings=self.settings,
+                    personalization=self.personalization,
+                    sync=self.sync,
+                    theme_manager=self.theme_manager,
+                )
             self.pages[name] = page
             self.stack.addWidget(page)
         layout.addWidget(self.stack, 1)
 
-        self.setStatusBar(QStatusBar())
-        self.statusBar().showMessage("Pronto")
+        status = QStatusBar()
+        status.setObjectName("statusBar")
+        self.setStatusBar(status)
+        status.showMessage("Pronto • GP Desktop Ultimate AI")
 
         self.navigate_to("Início")
         try:
-            self.theme_manager.apply_theme(self, "escuro")
+            theme_name = "escuro"
+            if self.settings is not None:
+                theme_name = self.settings.get("theme", theme_name)
+            self.theme_manager.apply_theme(self, theme_name)
         except Exception:
             pass
 
     def navigate_to(self, name):
         if name in self.pages:
             self.stack.setCurrentWidget(self.pages[name])
-            self.statusBar().showMessage(name)
+            try:
+                self.statusBar().showMessage(f"  {name}")
+            except Exception:
+                pass
+            # sincroniza selecao da sidebar
+            try:
+                for i in range(self.sidebar.list.count()):
+                    item = self.sidebar.list.item(i)
+                    if item.data(Qt.UserRole) == name:
+                        self.sidebar.list.setCurrentItem(item)
+                        break
+            except Exception:
+                pass

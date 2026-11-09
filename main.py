@@ -46,7 +46,17 @@ def main():
     settings = SettingsManager()
     personalization = PersonalizationManager()
     sync = SyncManager()
-    theme_manager = ThemeManager()
+    theme_manager = ThemeManager(app=app)
+
+    # tema inicial a partir das settings
+    try:
+        initial_theme = settings.get("theme", "escuro")
+    except Exception:
+        initial_theme = "escuro"
+    try:
+        theme_manager.apply_theme(app, initial_theme)
+    except Exception:
+        pass
 
     window = MainWindow(
         settings=settings,
