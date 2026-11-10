@@ -29,6 +29,9 @@ def load_env():
             load_dotenv(env_path)
         except Exception:
             pass
+    # defaults seguros para ambientes restritos
+    os.environ.setdefault("GP_DESKTOP_PORTABLE", "0")
+    os.environ.setdefault("GP_DESKTOP_ALLOW_BAT", "1")
 
 
 def main():

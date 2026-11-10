@@ -70,6 +70,45 @@ def _handle_button(name, text, managers):
         elif text == "Sincronizar agora":
             if sync is not None and hasattr(sync, "sync_now"):
                 sync.sync_now()
+        elif text == "Instalar":
+            try:
+                from PySide6.QtWidgets import QFileDialog
+                import subprocess
+
+                path, _ = QFileDialog.getOpenFileName(
+                    None,
+                    "Selecionar instalador",
+                    "",
+                    "Instaladores (*.msi *.exe);;Todos (*.*)",
+                )
+                if path:
+                    if path.lower().endswith(".msi"):
+                        subprocess.Popen(["msiexec", "/i", path])
+                    else:
+                        subprocess.Popen([path])
+            except Exception:
+                pass
+        elif text == "Desinstalar":
+            try:
+                from PySide6.QtWidgets import QInputDialog
+                import subprocess
+                from automation.programs import list_installed
+
+                apps = [a.get("name", "") for a in list_installed() if a.get("name")]
+                if not apps:
+                    return
+                name, ok = QInputDialog.getItem(
+                    None, "Desinstalar", "Aplicativo:", apps, 0, False
+                )
+                if ok and name:
+                    for a in list_installed():
+                        if a.get("name") == name:
+                            us = a.get("uninstall_string")
+                            if us:
+                                subprocess.Popen(us, shell=True)
+                            break
+            except Exception:
+                pass
         elif text == "Entrar":
             pass
     except Exception:
@@ -225,7 +264,11 @@ def _buttons_for(name):
         "Papéis de parede": [("Aplicar wallpaper", True), ("Explorar", False)],
         "Relógio": [("Criar relógio", True)],
         "Widgets": [("Adicionar widget", True)],
-        "Aplicativos": [("Abrir programa", True)],
+        "Aplicativos": [
+            ("Abrir programa", True),
+            ("Instalar", False),
+            ("Desinstalar", False),
+        ],
         "Automação": [("Executar rotina", True)],
         "Arquivos": [("Organizar pasta", True)],
         "Temas": [("Aplicar tema", True)],

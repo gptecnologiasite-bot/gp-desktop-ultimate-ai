@@ -20,7 +20,6 @@ from typing import Optional
 
 _SALT: bytes = b"gp-desktop-ultimate-ai-dpapi-salt-v1"
 _ENV_VAR: str = "GP_DESKTOP_SECRET_KEY"
-_DEFAULT_SEED: str = "gp-desktop-default-seed-change-me"
 _ITERATIONS: int = 390_000
 
 
@@ -38,7 +37,12 @@ def _derive_fernet_key() -> bytes:
     from cryptography.hazmat.primitives import hashes
     from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-    seed = os.environ.get(_ENV_VAR, _DEFAULT_SEED)
+    seed = os.environ.get(_ENV_VAR)
+    if not seed:
+        raise RuntimeError(
+            f"Variável de ambiente {_ENV_VAR} não definida; não é possível "
+            "derivar chave de criptografia fallback."
+        )
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,

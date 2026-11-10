@@ -21,14 +21,41 @@ try:
 except Exception:  # pragma: no cover
     _HAS_WIN32COM = False
 
+_BAT_BLOCKED_CACHE = None
+
+
+def is_bat_blocked() -> bool:
+    """Detecta (best-effort) se a execucao de .bat/.cmd esta bloqueada no ambiente."""
+    global _BAT_BLOCKED_CACHE
+    if _BAT_BLOCKED_CACHE is not None:
+        return _BAT_BLOCKED_CACHE
+    if os.name != "nt":
+        _BAT_BLOCKED_CACHE = False
+        return False
+    try:
+        subprocess.run(
+            ["cmd.exe", "/c", "echo", "ok"],
+            shell=False,
+            capture_output=True,
+            timeout=5,
+            check=True,
+        )
+        _BAT_BLOCKED_CACHE = False
+    except Exception:
+        _BAT_BLOCKED_CACHE = True
+    return _BAT_BLOCKED_CACHE
+
 
 def open_program(
     path: str, args: Optional[List[str]] = None, wait: bool = False
 ) -> bool:
     """Abre um programa/caminho. Retorna True em sucesso."""
     try:
-        # valida extensao permitida
-        allowed_exts = {".exe", ".bat", ".cmd", ".com", ".msi", ".py", ".js"}
+        # valida extensao permitida (configuravel por ambiente)
+        base_exts = {".exe", ".com", ".msi", ".py", ".js"}
+        if os.environ.get("GP_DESKTOP_ALLOW_BAT", "1") == "1" and not is_bat_blocked():
+            base_exts = base_exts | {".bat", ".cmd"}
+        allowed_exts = base_exts
         ext = os.path.splitext(path)[1].lower()
         if ext and ext not in allowed_exts:
             return False
