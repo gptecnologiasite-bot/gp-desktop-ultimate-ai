@@ -144,6 +144,19 @@ Veja `docs/ARCHITECTURE.md` para a estrutura completa. Resumo:
 - `widgets/` — widgets do sistema.
 - `windows/` — notificações, atalhos, inicialização, registro, display.
 
+## Modo portátil e ambientes restritos
+
+Para ambientes onde `.bat`/`.cmd` ou instalações são bloqueados, use as
+variáveis de ambiente:
+
+- `GP_DESKTOP_PORTABLE=1` — ativa modo portátil (desabilita `.bat`/`.cmd`).
+- `GP_DESKTOP_ALLOW_BAT=0` — desabilita abertura de `.bat`/`.cmd`.
+- `GP_DESKTOP_SECRET_KEY` — obrigatória para fallback de criptografia quando
+  o DPAPI não estiver disponível.
+
+O aplicativo detecta automaticamente se a execução de `.bat`/`.cmd` está
+bloqueada e ajusta as opções disponíveis.
+
 ## Segurança
 
 Tokens e segredos devem ficar em variáveis de ambiente de nível Usuário
